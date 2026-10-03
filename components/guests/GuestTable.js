@@ -43,31 +43,32 @@ export default function GuestTable({
       {/* Table */}
       <div className="overflow-x-auto">
 
-        <table className="w-full min-w-[800px]">
+        <table className="w-full min-w-[700px]">
 
           <thead>
             <tr className="border-b border-[#eee8e8] bg-[#faf8f7]">
 
+              {/* Guest */}
               <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#8d8582]">
                 Guest
               </th>
 
+              {/* Contact */}
               <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#8d8582]">
                 Contact
               </th>
 
+              {/* Relation */}
               <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#8d8582]">
                 Relation
               </th>
 
+              {/* RSVP */}
               <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#8d8582]">
                 RSVP
               </th>
 
-              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#8d8582]">
-                Gift
-              </th>
-
+              {/* Action */}
               <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#8d8582]">
                 Action
               </th>
@@ -89,11 +90,6 @@ export default function GuestTable({
                 guest.rsvp_status ||
                 "Pending";
 
-              const giftAmount =
-                guest.gift_amount ??
-                guest.gift ??
-                0;
-
               const isActionOpen =
                 openActionId === guest.id;
 
@@ -108,7 +104,7 @@ export default function GuestTable({
 
                     <div className="flex items-center gap-3">
 
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5eeee] text-sm font-semibold text-[#7a0719]">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5eeee] text-sm font-semibold text-[#7a0719]">
 
                         {guestName
                           ? guestName
@@ -129,7 +125,6 @@ export default function GuestTable({
                     </div>
 
                   </td>
-
 
                   {/* Contact */}
                   <td className="px-6 py-5">
@@ -156,12 +151,10 @@ export default function GuestTable({
 
                   </td>
 
-
                   {/* Relation */}
                   <td className="px-6 py-5 text-sm text-[#625b59]">
                     {guest.relation || "—"}
                   </td>
-
 
                   {/* RSVP */}
                   <td className="px-6 py-5">
@@ -171,13 +164,6 @@ export default function GuestTable({
                     />
 
                   </td>
-
-
-                  {/* Gift */}
-                  <td className="px-6 py-5 text-sm font-semibold text-[#302b29]">
-                    {formatGift(giftAmount)}
-                  </td>
-
 
                   {/* Action */}
                   <td className="relative px-6 py-5 text-right">
@@ -196,14 +182,12 @@ export default function GuestTable({
                       <MoreVertical size={18} />
                     </button>
 
-
                     {/* Action Menu */}
 
                     {isActionOpen && (
                       <div className="absolute right-6 top-[58px] z-20 w-[170px] overflow-hidden rounded-xl border border-[#eee8e8] bg-white p-1.5 text-left shadow-[0_8px_30px_rgba(60,30,30,0.12)]">
 
                         {/* Edit */}
-
                         <button
                           type="button"
                           onClick={() => {
@@ -219,9 +203,7 @@ export default function GuestTable({
                           Edit Guest
                         </button>
 
-
                         {/* Delete */}
-
                         <button
                           type="button"
                           onClick={() => {
@@ -252,9 +234,7 @@ export default function GuestTable({
 
       </div>
 
-
       {/* Empty */}
-
       {guests.length === 0 && (
         <div className="px-6 py-16 text-center">
 
@@ -275,26 +255,8 @@ export default function GuestTable({
 
 
 /* =====================================================
-   Gift Format
-===================================================== */
-
-function formatGift(amount) {
-  if (
-    amount === null ||
-    amount === undefined ||
-    amount === "" ||
-    Number(amount) <= 0
-  ) {
-    return "—";
-  }
-
-  return `₹${Number(amount).toLocaleString("en-IN")}`;
-}
-
-
-/* =====================================================
    RSVP Badge
-===================================================== */
+========================================================= */
 
 function RSVPBadge({ status }) {
   const styles = {

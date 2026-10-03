@@ -8,7 +8,6 @@ import {
   Mail,
   Users,
   CalendarCheck,
-  Gift,
 } from "lucide-react";
 
 export default function EditGuestModal({
@@ -24,7 +23,6 @@ export default function EditGuestModal({
     email: "",
     relation: "",
     rsvp_status: "Pending",
-    gift_amount: 0,
   });
 
   const [errors, setErrors] = useState({});
@@ -42,7 +40,6 @@ export default function EditGuestModal({
         email: guest.email || "",
         relation: guest.relation || "",
         rsvp_status: guest.rsvp_status || "Pending",
-        gift_amount: guest.gift_amount ?? 0,
       });
 
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -63,10 +60,7 @@ export default function EditGuestModal({
 
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        name === "gift_amount"
-          ? value
-          : value,
+      [name]: value,
     }));
 
     setErrors((prev) => ({
@@ -107,14 +101,6 @@ export default function EditGuestModal({
         "Please enter relation.";
     }
 
-    if (
-      formData.gift_amount === "" ||
-      Number(formData.gift_amount) < 0
-    ) {
-      newErrors.gift_amount =
-        "Gift amount cannot be negative.";
-    }
-
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -137,7 +123,6 @@ export default function EditGuestModal({
       email: formData.email.trim(),
       relation: formData.relation.trim(),
       rsvp_status: formData.rsvp_status,
-      gift_amount: Number(formData.gift_amount),
     };
 
     onSave(updatedGuest);
@@ -384,43 +369,6 @@ export default function EditGuestModal({
                 </div>
 
               </div>
-
-            </div>
-
-            {/* =================================================
-                GIFT AMOUNT
-            ================================================== */}
-
-            <div>
-
-              <label className="mb-2 block text-sm font-medium text-[#403a38]">
-                Gift Amount
-              </label>
-
-              <div className="relative">
-
-                <Gift
-                  size={17}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#928a87]"
-                />
-
-                <input
-                  type="number"
-                  name="gift_amount"
-                  min="0"
-                  value={formData.gift_amount}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  className="h-11 w-full rounded-xl border border-[#e8dfdd] bg-white pl-11 pr-4 text-sm text-[#302b29] outline-none transition focus:border-[#7a0719] disabled:bg-[#faf8f7]"
-                />
-
-              </div>
-
-              {errors.gift_amount && (
-                <p className="mt-1.5 text-xs text-[#b42318]">
-                  {errors.gift_amount}
-                </p>
-              )}
 
             </div>
 

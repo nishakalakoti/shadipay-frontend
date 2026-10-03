@@ -103,19 +103,119 @@ export default function Sidebar({ isOpen = false, onClose = () => {} }) {
       } lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none`}
     >
       <div className="flex h-[72px] shrink-0 items-center justify-between px-5">
-        <h1 className="text-[22px] font-semibold tracking-tight text-[#7a0719]">
-          ShadiPay
-        </h1>
+  {/* ShadiPay Brand Logo */}
+  <Link
+    href="/wedding"
+    aria-label="ShadiPay Home"
+    className="flex items-center gap-2.5"
+    onClick={handleNavClick}
+  >
+    {/* Logo Mark */}
+    <span
+      className="
+        relative
+        flex
+        h-9
+        w-9
+        shrink-0
+        items-center
+        justify-center
+        overflow-hidden
+        rounded-xl
+        bg-[#7a0719]
+        shadow-[0_4px_12px_rgba(122,7,25,0.18)]
+      "
+    >
+      {/* Decorative ring */}
+      <span
+        className="
+          absolute
+          h-5
+          w-5
+          rounded-full
+          border-[1.5px]
+          border-white/90
+        "
+      />
 
-        <button
-          type="button"
-          aria-label="Close sidebar"
-          onClick={onClose}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-[#625b59] transition hover:bg-white hover:text-[#7a0719] lg:hidden"
-        >
-          <X size={18} strokeWidth={2} />
-        </button>
-      </div>
+      <span
+        className="
+          absolute
+          h-5
+          w-5
+          translate-x-1.5
+          rounded-full
+          border-[1.5px]
+          border-white/45
+        "
+      />
+
+      {/* Center S */}
+      <span
+        className="
+          relative
+          z-10
+          text-[13px]
+          font-semibold
+          leading-none
+          text-white
+        "
+      >
+        S
+      </span>
+
+      {/* Small sparkle */}
+      <span
+        className="
+          absolute
+          right-1
+          top-1
+          h-1.5
+          w-1.5
+          rounded-full
+          bg-white
+        "
+      />
+    </span>
+
+    {/* Brand Name */}
+    <span
+      className="
+        text-[21px]
+        font-semibold
+        tracking-[-0.04em]
+        text-[#7a0719]
+      "
+    >
+      Shadi
+      <span className="font-normal text-[#342c2c]">
+        Pay
+      </span>
+    </span>
+  </Link>
+
+  {/* Mobile Close Button */}
+  <button
+    type="button"
+    aria-label="Close sidebar"
+    onClick={onClose}
+    className="
+      flex
+      h-9
+      w-9
+      items-center
+      justify-center
+      rounded-full
+      text-[#625b59]
+      transition
+      hover:bg-white
+      hover:text-[#7a0719]
+      lg:hidden
+    "
+  >
+    <X size={18} strokeWidth={2} />
+  </button>
+</div>
 
       <nav className="flex-1 overflow-y-auto px-3 pb-4 scrollbar-none">
         {menuSections.map((section) => (

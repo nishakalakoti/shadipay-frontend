@@ -7,16 +7,26 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+import {
+  ToastContainer,
+  toast,
+} from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+
 import WeddingOverview from "@/components/wedding/WeddingOverview";
 import CreateWeddingModal from "@/components/wedding/CreateWeddingModal";
 import EditWeddingModal from "@/components/wedding/EditWeddingModal";
+import DeleteWeddingModal from "@/components/wedding/DeleteWeddingModal";
 
-import { useWeddings } from "@/hooks/useWeddings";
+import {
+  useWeddings,
+  useDeleteWedding,
+} from "@/hooks/useWeddings";
+
 import { useWeddingOverview } from "@/hooks/useWeddingOverview";
 
-
 export default function WeddingPage() {
-
   // =====================================================
   // MODAL STATES
   // =====================================================
@@ -31,6 +41,10 @@ export default function WeddingPage() {
     setIsEditModalOpen,
   ] = useState(false);
 
+  const [
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+  ] = useState(false);
 
   // =====================================================
   // SELECTED WEDDING
@@ -40,7 +54,6 @@ export default function WeddingPage() {
     selectedWeddingId,
     setSelectedWeddingId,
   ] = useState(null);
-
 
   // =====================================================
   // GET ALL WEDDINGS
@@ -53,6 +66,14 @@ export default function WeddingPage() {
     error,
   } = useWeddings();
 
+  // =====================================================
+  // DELETE WEDDING
+  // =====================================================
+
+  const {
+    mutate: deleteWedding,
+    isPending: isDeleteLoading,
+  } = useDeleteWedding();
 
   // =====================================================
   // GET SELECTED WEDDING OVERVIEW
@@ -68,7 +89,6 @@ export default function WeddingPage() {
     selectedWeddingId
   );
 
-
   // =====================================================
   // SET DEFAULT WEDDING
   // =====================================================
@@ -82,7 +102,6 @@ export default function WeddingPage() {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedWeddingId((currentId) => {
-
       const currentWeddingExists =
         currentId &&
         weddings.some(
@@ -95,9 +114,7 @@ export default function WeddingPage() {
 
       return weddings[0].id;
     });
-
   }, [weddings]);
-
 
   // =====================================================
   // SAVE ACTIVE WEDDING
@@ -112,9 +129,7 @@ export default function WeddingPage() {
       "selectedWeddingId",
       String(selectedWeddingId)
     );
-
   }, [selectedWeddingId]);
-
 
   // =====================================================
   // SELECTED WEDDING DATA
@@ -125,10 +140,8 @@ export default function WeddingPage() {
       item.id === selectedWeddingId
   );
 
-
   const hasWedding =
     Boolean(wedding);
-
 
   // =====================================================
   // CREATE WEDDING
@@ -137,14 +150,29 @@ export default function WeddingPage() {
   const handleCreateWedding = (
     createdWedding
   ) => {
-
     setSelectedWeddingId(
       createdWedding.id
     );
 
     setIsCreateModalOpen(false);
+
+    toast.success(
+      "Wedding created successfully!"
+    );
   };
 
+  // =====================================================
+  // CREATE WEDDING ERROR
+  // =====================================================
+
+  const handleCreateWeddingError = (
+    createError
+  ) => {
+    toast.error(
+      createError?.message ||
+        "Failed to create wedding."
+    );
+  };
 
   // =====================================================
   // UPDATE WEDDING
@@ -153,14 +181,71 @@ export default function WeddingPage() {
   const handleUpdateWedding = (
     updatedWedding
   ) => {
-
     setSelectedWeddingId(
       updatedWedding.id
     );
 
     setIsEditModalOpen(false);
+
+    toast.success(
+      "Wedding updated successfully!"
+    );
   };
 
+  // =====================================================
+  // UPDATE WEDDING ERROR
+  // =====================================================
+
+  const handleUpdateWeddingError = (
+    updateError
+  ) => {
+    toast.error(
+      updateError?.message ||
+        "Failed to update wedding."
+    );
+  };
+
+  // =====================================================
+  // DELETE WEDDING
+  // =====================================================
+
+  const handleDeleteWedding = (
+    selectedWedding
+  ) => {
+    if (!selectedWedding?.id) {
+      return;
+    }
+
+    deleteWedding(
+      selectedWedding.id,
+      {
+        onSuccess: () => {
+          // Close delete modal
+          setIsDeleteModalOpen(false);
+
+          // Clear selected wedding
+          setSelectedWeddingId(null);
+
+          // Remove saved wedding
+          localStorage.removeItem(
+            "selectedWeddingId"
+          );
+
+          // Success toast
+          toast.success(
+            "Wedding deleted successfully!"
+          );
+        },
+
+        onError: (deleteError) => {
+          toast.error(
+            deleteError?.message ||
+              "Failed to delete wedding."
+          );
+        },
+      }
+    );
+  };
 
   // =====================================================
   // RENDER
@@ -175,9 +260,7 @@ export default function WeddingPage() {
 
       <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 
-        {/* =================================================
-            LEFT
-        ================================================== */}
+        {/* LEFT */}
 
         <div>
 
@@ -191,16 +274,11 @@ export default function WeddingPage() {
 
         </div>
 
-
-        {/* =================================================
-            RIGHT
-        ================================================== */}
+        {/* RIGHT */}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 
-          {/* =================================================
-              WEDDING DROPDOWN
-          ================================================== */}
+          {/* WEDDING DROPDOWN */}
 
           <div className="relative">
 
@@ -263,7 +341,6 @@ export default function WeddingPage() {
 
             </select>
 
-
             <ChevronDown
               size={17}
               className="
@@ -278,10 +355,7 @@ export default function WeddingPage() {
 
           </div>
 
-
-          {/* =================================================
-              CREATE WEDDING BUTTON
-          ================================================== */}
+          {/* CREATE WEDDING BUTTON */}
 
           <button
             type="button"
@@ -306,17 +380,14 @@ export default function WeddingPage() {
               active:scale-[0.98]
             "
           >
-
             <Plus size={17} />
 
             Create Wedding
-
           </button>
 
         </div>
 
       </div>
-
 
       {/* =====================================================
           LOADING
@@ -333,7 +404,6 @@ export default function WeddingPage() {
         </div>
 
       )}
-
 
       {/* =====================================================
           ERROR
@@ -353,7 +423,6 @@ export default function WeddingPage() {
 
         )}
 
-
       {/* =====================================================
           WEDDING DATA
       ====================================================== */}
@@ -362,25 +431,33 @@ export default function WeddingPage() {
         !isError &&
         hasWedding && (
 
-          <WeddingOverview
-            wedding={wedding}
-            overview={weddingOverview}
-            isOverviewLoading={
-              isOverviewLoading
-            }
-            isOverviewError={
-              isOverviewError
-            }
-            overviewError={
-              overviewError
-            }
-            onEdit={() =>
-              setIsEditModalOpen(true)
-            }
-          />
+          <>
+
+            {/* WEDDING OVERVIEW */}
+
+            <WeddingOverview
+              wedding={wedding}
+              overview={weddingOverview}
+              isOverviewLoading={
+                isOverviewLoading
+              }
+              isOverviewError={
+                isOverviewError
+              }
+              overviewError={
+                overviewError
+              }
+              onEdit={() =>
+                setIsEditModalOpen(true)
+              }
+              onDelete={() =>
+                setIsDeleteModalOpen(true)
+              }
+            />
+
+          </>
 
         )}
-
 
       {/* =====================================================
           NO WEDDING
@@ -403,17 +480,14 @@ export default function WeddingPage() {
 
               </div>
 
-
               <h2 className="mt-5 text-xl font-semibold text-[#302b29]">
                 Create your wedding registry
               </h2>
-
 
               <p className="mt-2 text-sm leading-6 text-[#817976]">
                 Add your wedding details and create a unique registry
                 where your guests can send gifts and payments.
               </p>
-
 
               <button
                 type="button"
@@ -451,7 +525,6 @@ export default function WeddingPage() {
 
         )}
 
-
       {/* =====================================================
           CREATE WEDDING MODAL
       ====================================================== */}
@@ -466,8 +539,10 @@ export default function WeddingPage() {
         onCreate={
           handleCreateWedding
         }
+        onError={
+          handleCreateWeddingError
+        }
       />
-
 
       {/* =====================================================
           EDIT WEDDING MODAL
@@ -486,9 +561,53 @@ export default function WeddingPage() {
           onSave={
             handleUpdateWedding
           }
+          onError={
+            handleUpdateWeddingError
+          }
         />
 
       )}
+
+      {/* =====================================================
+          DELETE WEDDING MODAL
+      ====================================================== */}
+
+      {hasWedding && (
+
+        <DeleteWeddingModal
+          isOpen={
+            isDeleteModalOpen
+          }
+          onClose={() =>
+            setIsDeleteModalOpen(false)
+          }
+          wedding={wedding}
+          onDelete={
+            handleDeleteWedding
+          }
+          isLoading={
+            isDeleteLoading
+          }
+        />
+
+      )}
+
+      {/* =====================================================
+          TOASTIFY
+      ====================================================== */}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
 
     </main>
   );

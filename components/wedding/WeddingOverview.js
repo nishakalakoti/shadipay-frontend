@@ -11,6 +11,8 @@ import {
   Trash2,
 } from "lucide-react";
 
+import RegistryLink from "@/components/wedding/RegistryLink";
+
 export default function WeddingOverview({
   wedding,
   overview,
@@ -41,9 +43,6 @@ export default function WeddingOverview({
       })
     : "-";
 
-  const registryUrl =
-    `shadipay.com/r/${wedding.id}`;
-
   // =====================================================
   // WEDDING OVERVIEW DATA
   // =====================================================
@@ -57,6 +56,10 @@ export default function WeddingOverview({
   const onlinePayments =
     overview?.online_payments ?? 0;
 
+  // =====================================================
+  // RETURN
+  // =====================================================
+
   return (
     <div className="space-y-5 sm:space-y-6">
 
@@ -66,7 +69,9 @@ export default function WeddingOverview({
 
       <section className="overflow-hidden rounded-[22px] border border-[#eee8e8] bg-white shadow-[0_2px_12px_rgba(60,30,30,0.03)] sm:rounded-[24px]">
 
-        {/* Cover */}
+        {/* =================================================
+            COVER
+        ================================================== */}
 
         <div className="relative min-h-[170px] overflow-hidden bg-gradient-to-r from-[#f5e9e7] via-[#ead8d5] to-[#f7eeee] sm:h-[190px] sm:min-h-0">
 
@@ -116,22 +121,28 @@ export default function WeddingOverview({
                 sm:py-2.5
               "
             >
+
               <QrCode size={16} />
 
-              <span>View QR</span>
+              <span>
+                View QR
+              </span>
+
             </Link>
 
           </div>
 
         </div>
 
-        {/* =====================================================
+        {/* =================================================
             WEDDING DETAILS
-        ====================================================== */}
+        ================================================== */}
 
         <div className="p-5 sm:p-7">
 
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-6">
+
+            {/* LEFT */}
 
             <div className="min-w-0">
 
@@ -144,6 +155,8 @@ export default function WeddingOverview({
               {/* Date + Venue */}
 
               <div className="mt-4 flex flex-col gap-3 text-sm text-[#817976] sm:flex-row sm:flex-wrap sm:items-center sm:gap-5">
+
+                {/* Date */}
 
                 <div className="flex min-w-0 items-center gap-2">
 
@@ -158,6 +171,8 @@ export default function WeddingOverview({
 
                 </div>
 
+                {/* Venue */}
+
                 <div className="flex min-w-0 items-start gap-2">
 
                   <MapPin
@@ -166,7 +181,8 @@ export default function WeddingOverview({
                   />
 
                   <span className="break-words">
-                    {wedding.wedding_venue || "-"}
+                    {wedding.wedding_venue ||
+                      "-"}
                   </span>
 
                 </div>
@@ -175,13 +191,13 @@ export default function WeddingOverview({
 
             </div>
 
-            {/* =====================================================
-                EDIT + DELETE WEDDING
-            ====================================================== */}
+            {/* =================================================
+                ACTION BUTTONS
+            ================================================== */}
 
-            <div className="flex w-full flex-col gap-3 sm:w-fit sm:flex-row">
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-end lg:w-auto">
 
-              {/* Edit Wedding */}
+              {/* EDIT WEDDING */}
 
               <button
                 type="button"
@@ -206,12 +222,14 @@ export default function WeddingOverview({
                   sm:w-fit
                 "
               >
+
                 <Pencil size={16} />
 
                 Edit Wedding
+
               </button>
 
-              {/* Delete Wedding */}
+              {/* DELETE WEDDING */}
 
               <button
                 type="button"
@@ -231,15 +249,16 @@ export default function WeddingOverview({
                   font-semibold
                   text-red-600
                   transition
-                  hover:border-red-600
+                  hover:border-red-300
                   hover:bg-red-50
-                  hover:text-red-700
                   sm:w-fit
                 "
               >
+
                 <Trash2 size={16} />
 
                 Delete Wedding
+
               </button>
 
             </div>
@@ -256,7 +275,9 @@ export default function WeddingOverview({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
-        {/* Guests */}
+        {/* =================================================
+            GUESTS
+        ================================================== */}
 
         <Stat
           icon={Users}
@@ -270,7 +291,9 @@ export default function WeddingOverview({
           }
         />
 
-        {/* Gifts */}
+        {/* =================================================
+            GIFTS
+        ================================================== */}
 
         <Stat
           icon={Gift}
@@ -284,7 +307,9 @@ export default function WeddingOverview({
           }
         />
 
-        {/* Payments */}
+        {/* =================================================
+            PAYMENTS
+        ================================================== */}
 
         <Stat
           icon={CreditCard}
@@ -305,69 +330,27 @@ export default function WeddingOverview({
       ====================================================== */}
 
       {isOverviewError && (
+
         <p className="text-sm text-red-600">
+
           {overviewError?.message ||
             "Failed to load wedding overview."}
+
         </p>
+
       )}
 
       {/* =====================================================
           REGISTRY LINK
       ====================================================== */}
 
-      <section className="rounded-[20px] border border-[#eee8e8] bg-white p-5 shadow-[0_2px_12px_rgba(60,30,30,0.03)] sm:rounded-[22px] sm:p-6">
-
-        <h2 className="text-lg font-semibold text-[#171717]">
-          Wedding Registry
-        </h2>
-
-        <p className="mt-1 text-sm leading-6 text-[#817976]">
-          Share this link with your guests to receive gifts and payments.
-        </p>
-
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-
-          {/* Registry URL */}
-
-          <div className="min-w-0 flex-1 overflow-hidden rounded-xl border border-[#eee8e8] bg-[#faf8f7] px-4 py-3 text-sm text-[#625b59]">
-
-            <p className="truncate">
-              {registryUrl}
-            </p>
-
-          </div>
-
-          {/* Copy Link */}
-
-          <button
-            type="button"
-            className="
-              inline-flex
-              items-center
-              justify-center
-              rounded-xl
-              bg-[#7a0719]
-              px-5
-              py-3
-              text-sm
-              font-semibold
-              text-white
-              transition
-              hover:bg-[#650515]
-              sm:shrink-0
-            "
-          >
-            Copy Link
-          </button>
-
-        </div>
-
-      </section>
+      <RegistryLink
+        weddingId={wedding.id}
+      />
 
     </div>
   );
 }
-
 
 /* =========================================================
    REUSABLE STAT COMPONENT
@@ -383,7 +366,7 @@ function Stat({
 
       <div className="flex items-center gap-3">
 
-        {/* Icon */}
+        {/* ICON */}
 
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f5eeee]">
 
@@ -394,7 +377,7 @@ function Stat({
 
         </div>
 
-        {/* Label */}
+        {/* LABEL */}
 
         <p className="text-sm text-[#817976]">
           {label}
@@ -402,7 +385,7 @@ function Stat({
 
       </div>
 
-      {/* Value */}
+      {/* VALUE */}
 
       <p className="mt-4 font-serif text-2xl font-semibold text-[#171717]">
         {value}

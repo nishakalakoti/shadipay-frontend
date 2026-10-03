@@ -1,28 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import { UserRound } from "lucide-react";
+
 
 export default function ProfileSettings({
   profile,
   onSave,
 }) {
+
   const [form, setForm] = useState(profile);
 
+
+  // =====================================================
+  // UPDATE WHEN FIREBASE PROFILE LOADS
+  // =====================================================
+
+  useEffect(() => {
+
+    setForm(profile);
+
+  }, [profile]);
+
+
+  // =====================================================
+  // INPUT CHANGE
+  // =====================================================
+
   const handleChange = (event) => {
-    const { name, value } = event.target;
+
+    const {
+      name,
+      value,
+    } = event.target;
 
     setForm((previous) => ({
       ...previous,
       [name]: value,
     }));
+
   };
 
+
+  // =====================================================
+  // SUBMIT
+  // =====================================================
+
   const handleSubmit = (event) => {
+
     event.preventDefault();
 
     onSave(form);
+
   };
+
 
   return (
     <form
@@ -30,17 +62,24 @@ export default function ProfileSettings({
       className="space-y-5"
     >
 
-      {/* Profile Header */}
+      {/* =================================================
+          PROFILE HEADER
+      ================================================== */}
+
       <div className="flex items-center gap-4">
 
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#f5eeee]">
+
           <UserRound
             size={23}
             className="text-[#7a0719]"
           />
+
         </div>
 
+
         <div>
+
           <p className="text-sm font-semibold text-[#403a38]">
             Profile Information
           </p>
@@ -48,13 +87,21 @@ export default function ProfileSettings({
           <p className="mt-1 text-xs text-[#817976]">
             This information belongs to your ShadiPay account.
           </p>
+
         </div>
 
       </div>
 
+
+      {/* =================================================
+          FORM
+      ================================================== */}
+
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
-        {/* Name */}
+
+        {/* NAME */}
+
         <div>
 
           <label className="mb-2 block text-sm font-medium text-[#403a38]">
@@ -63,14 +110,27 @@ export default function ProfileSettings({
 
           <input
             name="name"
-            value={form.name}
+            value={form.name || ""}
             onChange={handleChange}
-            className="w-full rounded-xl border border-[#e8dfdd] px-4 py-3 text-sm outline-none focus:border-[#7a0719]"
+            placeholder="Your name"
+            className="
+              w-full
+              rounded-xl
+              border
+              border-[#e8dfdd]
+              px-4
+              py-3
+              text-sm
+              outline-none
+              focus:border-[#7a0719]
+            "
           />
 
         </div>
 
-        {/* Email */}
+
+        {/* EMAIL */}
+
         <div>
 
           <label className="mb-2 block text-sm font-medium text-[#403a38]">
@@ -80,14 +140,32 @@ export default function ProfileSettings({
           <input
             type="email"
             name="email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full rounded-xl border border-[#e8dfdd] px-4 py-3 text-sm outline-none focus:border-[#7a0719]"
+            value={form.email || ""}
+            readOnly
+            className="
+              w-full
+              cursor-not-allowed
+              rounded-xl
+              border
+              border-[#e8dfdd]
+              bg-[#faf8f7]
+              px-4
+              py-3
+              text-sm
+              text-[#625b59]
+              outline-none
+            "
           />
+
+          <p className="mt-1 text-xs text-[#9a9290]">
+            Email is managed by Firebase Authentication.
+          </p>
 
         </div>
 
-        {/* Phone */}
+
+        {/* PHONE */}
+
         <div>
 
           <label className="mb-2 block text-sm font-medium text-[#403a38]">
@@ -96,20 +174,45 @@ export default function ProfileSettings({
 
           <input
             name="phone"
-            value={form.phone}
+            value={form.phone || ""}
             onChange={handleChange}
-            className="w-full rounded-xl border border-[#e8dfdd] px-4 py-3 text-sm outline-none focus:border-[#7a0719]"
+            placeholder="Phone number"
+            className="
+              w-full
+              rounded-xl
+              border
+              border-[#e8dfdd]
+              px-4
+              py-3
+              text-sm
+              outline-none
+              focus:border-[#7a0719]
+            "
           />
 
         </div>
 
       </div>
 
+
+      {/* =================================================
+          SAVE
+      ================================================== */}
+
       <div className="flex justify-end">
 
         <button
           type="submit"
-          className="rounded-xl bg-[#7a0719] px-5 py-3 text-sm font-semibold text-white hover:bg-[#650515]"
+          className="
+            rounded-xl
+            bg-[#7a0719]
+            px-5
+            py-3
+            text-sm
+            font-semibold
+            text-white
+            hover:bg-[#650515]
+          "
         >
           Save Changes
         </button>

@@ -1,44 +1,96 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import SettingsSection from "@/components/settings/SettingsSection";
 import ProfileSettings from "@/components/settings/ProfileSettings";
-import WeddingSettings from "@/components/settings/WeddingSettings";
-import NotificationSettings from "@/components/settings/NotificationSettings";
 import SecuritySettings from "@/components/settings/SecuritySettings";
 import DangerZone from "@/components/settings/DangerZone";
 
+import { useWeddings, useDeleteWedding } from "@/hooks/useWeddings";
 
-const initialProfile = {
-  name: "Rahul Sharma",
-  email: "rahul@example.com",
-  phone: "+91 98765 43210",
-};
-
-
-const initialWedding = {
-  coupleNames: "Rahul & Priya",
-  date: "25 December 2026",
-  venue: "Dehradun, Uttarakhand",
-  registryUrl: "shadipay.com/r/rahul-priya",
-};
+import { auth } from "@/lib/firebase";
 
 
 export default function SettingsPage() {
-  const [profile, setProfile] =
-    useState(initialProfile);
 
-  const [wedding, setWedding] =
-    useState(initialWedding);
+  // =====================================================
+  // PROFILE
+  // =====================================================
 
-  const [notifications, setNotifications] =
-    useState({
-      payments: true,
-      gifts: true,
-      guests: true,
-      invitations: true,
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+
+
+  // =====================================================
+  // NOTIFICATIONS
+  // =====================================================
+
+  const [notifications, setNotifications] = useState({
+    payments: true,
+    gifts: true,
+    guests: true,
+    invitations: true,
+  });
+
+
+  // =====================================================
+  // GET WEDDINGS
+  // =====================================================
+
+  const {
+    data: weddings = [],
+    isLoading: isWeddingsLoading,
+    isError: isWeddingsError,
+    error: weddingsError,
+  } = useWeddings();
+
+
+  // =====================================================
+  // DELETE WEDDING
+  // =====================================================
+
+  const {
+    mutate: deleteWedding,
+    isPending: isDeletePending,
+  } = useDeleteWedding();
+
+
+  // =====================================================
+  // GET FIREBASE USER
+  // =====================================================
+
+  useEffect(() => {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+      return;
+    }
+
+    setProfile({
+      name: user.displayName || "",
+      email: user.email || "",
+      phone: user.phoneNumber || "",
     });
+
+  }, []);
+
+
+  // =====================================================
+  // SELECT WEDDING
+  // =====================================================
+
+  const selectedWedding =
+    weddings.length > 0
+      ? weddings[0]
+      : null;
 
 
   // =====================================================
@@ -46,16 +98,13 @@ export default function SettingsPage() {
   // =====================================================
 
   const handleProfileSave = (data) => {
+
     setProfile(data);
-  };
 
+    toast.success(
+      "Profile updated successfully!"
+    );
 
-  // =====================================================
-  // WEDDING SAVE
-  // =====================================================
-
-  const handleWeddingSave = (data) => {
-    setWedding(data);
   };
 
 
@@ -67,10 +116,53 @@ export default function SettingsPage() {
     name,
     value
   ) => {
+
     setNotifications((previous) => ({
       ...previous,
       [name]: value,
     }));
+
+  };
+
+
+  // =====================================================
+  // DELETE WEDDING
+  // =====================================================
+
+  const handleDeleteWedding = (
+    wedding
+  ) => {
+
+    if (!wedding?.id) {
+      toast.error(
+        "Wedding ID not found."
+      );
+
+      return;
+    }
+
+
+    deleteWedding(wedding.id, {
+
+      onSuccess: () => {
+
+        toast.success(
+          "Wedding deleted successfully!"
+        );
+
+      },
+
+      onError: (error) => {
+
+        toast.error(
+          error?.message ||
+          "Failed to delete wedding."
+        );
+
+      },
+
+    });
+
   };
 
 
@@ -100,6 +192,7 @@ export default function SettingsPage() {
 
       <div className="max-w-5xl space-y-6">
 
+
         {/* =================================================
             PROFILE
         ================================================== */}
@@ -108,42 +201,12 @@ export default function SettingsPage() {
           title="Profile"
           description="Manage your personal account information."
         >
+
           <ProfileSettings
             profile={profile}
             onSave={handleProfileSave}
           />
-        </SettingsSection>
 
-
-        {/* =================================================
-            WEDDING
-        ================================================== */}
-
-        <SettingsSection
-          title="Wedding Details"
-          description="Update the information displayed on your wedding registry."
-        >
-          <WeddingSettings
-            wedding={wedding}
-            onSave={handleWeddingSave}
-          />
-        </SettingsSection>
-
-
-        {/* =================================================
-            NOTIFICATIONS
-        ================================================== */}
-
-        <SettingsSection
-          title="Notifications"
-          description="Choose which wedding activities you want to be notified about."
-        >
-          <NotificationSettings
-            settings={notifications}
-            onChange={
-              handleNotificationChange
-            }
-          />
         </SettingsSection>
 
 
@@ -155,7 +218,9 @@ export default function SettingsPage() {
           title="Security"
           description="Manage your password and account security."
         >
+
           <SecuritySettings />
+
         </SettingsSection>
 
 
@@ -163,9 +228,32 @@ export default function SettingsPage() {
             DANGER ZONE
         ================================================== */}
 
-        <DangerZone />
+        <DangerZone
+          wedding={selectedWedding}
+          isLoading={isWeddingsLoading}
+          isDeletePending={isDeletePending}
+          isError={isWeddingsError}
+          error={weddingsError}
+          onDelete={handleDeleteWedding}
+        />
+
 
       </div>
+
+
+      {/* =================================================
+          TOAST
+      ================================================== */}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
 
     </main>
   );
